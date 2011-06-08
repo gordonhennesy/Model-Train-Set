@@ -296,12 +296,12 @@ len_sw=361
 ##switches[628]={'forward':{'0':1,'1':1,'state':'0'},'reverse':{'0':len_sw, '1': len_sw,'state':'0'}}
 #857
 
-switches[270]={'forward':{'0':271, '1': 721,'state':'1','flip':-1},'reverse':{'0':269, '1': 269,'state':'0','flip':-1}}
+switches[270]={'forward':{'0':271, '1': 721,'state':'0','flip':-1},'reverse':{'0':269, '1': 269,'state':'0','flip':-1}}
 #switches[718]={'forward':{'0':0, '1': 0,'state':'0','flip':-1},'reverse':{'0':269, '1': 269,'state':'0','flip':-1}}
-switches[720]={'forward':{'0':721, '1': 721,'state':'0','flip':-1},'reverse':{'0':269, '1': 269,'state':'0','flip':-1}}
+switches[720]={'forward':{'0':1, '1': 1,'state':'0','flip':-1},'reverse':{'0':269, '1': 269,'state':'0','flip':-1}}
 switches[853]={'forward':{'0':628,'1':628,'state':'0','flip':1},'reverse':{'0':628, '1': 618,'state':'0','flip':-1}}
-switches[0]={'forward':{'0':1,'1':1,'state':'0','flip':1},'reverse':{'0':718, '1': 718,'state':'0','flip':-1}}
-switches[628]={'forward':{'0':852,'1':1,'state':'0','flip':1},'reverse':{'0':627, '1': len_sw,'state':'0','flip':-1}}
+switches[0]={'forward':{'0':1,'1':1,'state':'0','flip':-1},'reverse':{'0':719, '1': 719,'state':'0','flip':-1}}
+switches[628]={'forward':{'0':852,'1':629,'state':'0','flip':-1},'reverse':{'0':627, '1': 627,'state':'0','flip':-1}}
 
 switch_numbers = []
 switch_numbers.append(270)
@@ -427,7 +427,8 @@ while 1:
    #   print 'switch at segment',sw
       aseg = segments[sw]
       rect = pygame.draw.line(screen, color, seg[0], seg[1], width)
-      for i in range(10):
+      #for i in range(10):
+      if False:
          astate = switches[sw]['forward']['state']
          asegidx = switches[sw]['forward'][astate]
          if switches[sw]['forward']['flip'] == 1:
@@ -449,7 +450,9 @@ while 1:
          #print 'BLAH ',sw,segments[sw]
          seg = segments[sw]
          rect = pygame.draw.line(screen, color, seg[0], seg[1], width)
-         for i in range(10):
+         #for i in range(10):
+         if False:
+            i = 0
             state = switches[sw]['forward']['state']
             if switches[sw]['forward'][state]+i < len(segments):
                seg = segments[switches[sw]['forward'][state]+i]
