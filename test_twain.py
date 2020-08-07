@@ -1,18 +1,37 @@
 import sys, pygame
 import math
 from pygame.locals import *
-from pygame.sprite import Sprite
 grass = (0,255,127)
 silver = (158, 176, 206) #(127,127,127)
 brown = (151, 84, 20)
 dark_brown= (118,55,19)
 yellow = (255,255,0)
-black = 0, 0, 0
-white = 255,255,255
-
 class Track(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+def next_segid(self, switches, prev_idx, forward, ):
+   if self.forward == 1:
+      forward = 'forward'
+   else:
+      forward='reverse'
+   
+   if self.segidx in switches.keys():
+      state = switches[self.segidx][forward]['state']
+      print(switches[self.segidx][forward][state])
+      print('b4',self.segidx)
+      if self.segidx == 853: self.forward = -1
+      self.segidx = switches[self.segidx][forward][state]
+      print('aft',self.segidx)
+      #if self.segidx < 0: self.stop()
+   else:
+      self.segidx += self.forward
+   #print(self.segidx)
+   if self.segidx > len(self.segments)-1:
+      ##self.stop() 
+      segidx = 0
+      #print("STOPPPPP")
+   elif self.segidx < 0: self.segidx = len(self.segments) - 1
+   #print(self.segidx)
 class Car(pygame.sprite.Sprite):
     def __init__(self, image, length, segments, currentsegment=0, switches={}, forward = 1):
     #def __init__(self, image, segments, currentsegment=0, forward = 1):
@@ -102,7 +121,7 @@ class Car(pygame.sprite.Sprite):
         # to here
         self.segidx = self.next_segid(switches, self.segidx, self.forward)
 
-        #print 'prev index is',prev_seg_idx, self.segidx,self.queue
+        #print('prev index is',prev_seg_idx, self.segidx,self.queue)
         
         self.addToQueue(self.segidx) # this implements a circular queue
         
@@ -118,13 +137,11 @@ class Car(pygame.sprite.Sprite):
       
       if self.segidx in switches.keys():
          state = switches[self.segidx][forward]['state']
-         flip = switches[self.segidx][forward]['flip']
-         #print switches[prev_idx][forward][state]
-         #print 'b4',self.segidx
+         #print(switches[prev_idx][forward][state])
+         #print('b4',self.segidx)
          #if self.segidx == 853: self.forward = -1
          segidx = switches[prev_idx][forward][state]
-         if flip == 1:
-         #if self.segidx == 853 or self.segidx == 628 or (self.segidx == 270 and self.forward == -1): 
+         if self.segidx == 853: 
             #if self.facing == 1:
             #   self.facing = -1
             #else:
@@ -133,15 +150,15 @@ class Car(pygame.sprite.Sprite):
                self.forward = -1
             else:
                self.forward = 1
-         #print 'aft',self.segidx
+         #print('aft',self.segidx)
          #if self.segidx < 0: self.stop()
       else:
          segidx = self.segidx + self.forward
-      #print self.segidx
+      #print(self.segidx)
       if self.segidx > len(self.segments)-1:
          ##self.stop() 
          segidx = 0
-         #print "STOPPPPP"
+         #print("STOPPPPP")
       elif self.segidx < 0: segidx = len(self.segments) - 1
       return segidx
 
@@ -215,9 +232,8 @@ def degreesToIndex(deg):
     for i in range(0,  circle_piece):
         if (deg -  (360/circle_piece) * i) <= (360/circle_piece): return i
     return 0
-def loadAnImage(imagename, imgdir ="/Users/gordonh/"):    
 #def loadAnImage(imagename, imgdir ="/Users/gordonh/workingcopy/pyproj/img/atsf/atsf/"):    
-#def loadAnImage(imagename, imgdir ="/Users/gordon/img/trainimages/atsf/atsf/"):    
+def loadAnImage(imagename, imgdir ="img/"):    
     ball = pygame.image.load(imgdir+imagename)
     ball_width,ball_height = ball.get_size()
     ball=pygame.transform.scale(ball, (int(math.floor(ball_width * 0.60)), int(math.floor(ball_height * 0.60))))
@@ -253,9 +269,9 @@ for li in lis:
     x,y = s[1:-1].split(',')
     segs.append((x,y))
     #if line_index == 1374:
-    #  print 'seg idx',len(segs)
+    #  print('seg idx',len(segs))
     line_index +=1
-#print 'finished', segs[0]
+#print('finished', segs[0])
 pointlist = []
 for seg in segs:
     pointlist.append((int(seg[0]),int(seg[1])))
@@ -267,12 +283,12 @@ def distance(point,prevpoint):
 segments = []
 prevpoint = pointlist[len(pointlist)-1]
 for point in pointlist:
-   #print distance(point,prevpoint)
+   #print(distance(point,prevpoint))
    #if True: #distance(point,prevpoint) <= 5.0:
    if distance(point,prevpoint) <= 7.0:
       segments.append((prevpoint, point))
    prevpoint = point
-#print 'Segments: ',len(segments)
+#print('Segments: ',len(segments))
 switches = {}
 #switches[720]={'forward':{'0':0, '1': 400,'state':'0'},'reverse':{'0':0, '1': 400,'state':'1'}}
 #switches[270]={'forward':{'0':275, '1': 1375,'state':'0'},'reverse':{'0':0, '1': 400,'state':'1'}}
@@ -283,31 +299,18 @@ switches = {}
 #switches[270]={'forward':{'0':271, '1': 361,'state':'0'},'reverse':{'0':0, '1': 400,'state':'1'}}
 #switches[358]={'forward':{'0':0,'1':0,'state':'0'}}
 
-##switches[270]={'forward':{'0':271, '1': 721,'state':'0'},'reverse':{'0':269, '1': 269,'state':'0'}}
-##switches[718]={'forward':{'0':0, '1': 0,'state':'0'},'reverse':{'0':717, '1': 717,'state':'0'}}
+switches[270]={'forward':{'0':271, '1': 721,'state':'0'},'reverse':{'0':269, '1': 269,'state':'0'}}
+switches[718]={'forward':{'0':0, '1': 0,'state':'0'},'reverse':{'0':717, '1': 717,'state':'0'}}
 
 #switches[358]={'forward':{'0':0,'1':0,'state':'0'}}
-##switches[853]={'forward':{'0':628,'1':628,'state':'0'},'reverse':{'0':628, '1': 721,'state':'0'}}
-#switches[0]={'forward':{'0':1,'1':1,'state':'0'},'reverse':{'0':718, '1': 853,'state':'0'}}
-##switches[0]={'forward':{'0':1,'1':1,'state':'0'},'reverse':{'0':853, '1': 853,'state':'0'}}
-len_sw = len(segments) - 1
-print "len sw: ",len_sw
-len_sw=361
-##switches[628]={'forward':{'0':1,'1':1,'state':'0'},'reverse':{'0':len_sw, '1': len_sw,'state':'0'}}
+switches[853]={'forward':{'0':628, '1':628,'state':'0'},'reverse':{'0':628, '1': 628,'state':'0'}}
+switches[0]={'forward':{'0':1,'1':1,'state':'0'},'reverse':{'0':718, '1': 718,'state':'0'}}
 #857
-
-switches[270]={'forward':{'0':271, '1': 721,'state':'0','flip':-1},'reverse':{'0':269, '1': 269,'state':'0','flip':-1}}
-#switches[718]={'forward':{'0':0, '1': 0,'state':'0','flip':-1},'reverse':{'0':269, '1': 269,'state':'0','flip':-1}}
-switches[720]={'forward':{'0':1, '1': 1,'state':'0','flip':-1},'reverse':{'0':269, '1': 269,'state':'0','flip':-1}}
-switches[853]={'forward':{'0':628,'1':628,'state':'0','flip':1},'reverse':{'0':628, '1': 618,'state':'0','flip':-1}}
-switches[0]={'forward':{'0':1,'1':1,'state':'0','flip':-1},'reverse':{'0':719, '1': 719,'state':'0','flip':-1}}
-switches[628]={'forward':{'0':852,'1':629,'state':'0','flip':-1},'reverse':{'0':627, '1': 627,'state':'0','flip':-1}}
-
 switch_numbers = []
 switch_numbers.append(270)
-switch_numbers.append(628)
+switch_numbers.append(853)
 
-#print switches.keys()
+#print(switches.keys())
 
 #reverse_seqments = segments[:]
 #reverse_seqments.reverse()
@@ -316,7 +319,6 @@ clock = pygame.time.Clock()
 quit = 0
 pygame.display.init()
 size = width, height = pygame.display.list_modes()[0]
-
 #size = width, height = 476, 335
 speed = [2, 2]
 black = 0, 0, 0
@@ -334,8 +336,6 @@ if True:
    #traincars.add(Car(loadAnImage("atsff7aright_t.bmp"), segments,255))
    
    #traincars.add(Car(loadAnImage("atsf40sdbox-2_t.bmp"), segments,35))
-#   traincars.add(Car(loadAnImage("atsf40sdbox-2_t.bmp"), 10, segments,242, switches, 1))
-#   traincars.add(Car(loadAnImage("atsf40sdbox-2_t.bmp"), 10, segments,232))
    traincars.add(Car(loadAnImage("atsf40sdbox-2_t.bmp"), 10, segments,242, switches, 1))
    traincars.add(Car(loadAnImage("atsf40sdbox-2_t.bmp"), 10, segments,232))
    traincars.add(Car(loadAnImage("atsfbwcaboose_t.bmp"), 10, segments,222))
@@ -362,28 +362,16 @@ def track_line(point1, point2):
    color = brown
    width = 9
    rect = pygame.draw.line(background, color, point1, point2, width)
-
-pygame.font.init()
-fname = 'freesansbold.ttf' #pygame.font.get_default_font()
-print 'fname',fname
-fsize = 14 #9
-myFont = pygame.font.Font(fname, fsize, bold=True, italic=False)
-
-class Word(pygame.sprite.Sprite):
-    def __init__(self, theword, thefont):
-        Sprite.__init__(self)
-        self.myFont = thefont
-        self.selected = False
-        self.image = self.myFont.render(theword, True, white)
-        self.theword = theword
-        self.rect = self.image.get_rect()
-    def update(self):
-        pass
+#index_of_counting = 0
 for seg in segments:
    track_line(seg[0],seg[1])
+   #if index_of_counting == 10:
+   #   continue
+   #index_of_counting += 1
    #rect = pygame.draw.line(background, color, seg[0], seg[1], width) #: return Rect
 
-drawn = False   
+#print(screen.get_size())
+   
 while 1:
    clock.tick(6 - speed)
    for event in pygame.event.get():
@@ -410,68 +398,33 @@ while 1:
                   switches[switch_key]['forward']['state'] ='0'
             elif event.key == pygame.locals.K_2:
                switch_key = switch_numbers[1]
-               print 'SWITCH',switch_key
+               #print(switch_key)
                if switches[switch_key]['forward']['state'] == '0': 
                   switches[switch_key]['forward']['state'] = '1' 
                else:
                   switches[switch_key]['forward']['state'] ='0'
-               if switches[switch_key]['reverse']['state'] == '0': 
-                  switches[switch_key]['reverse']['state'] = '1' 
+            elif event.key == pygame.locals.K_3:
+               switch_key = switch_numbers[2]
+               if switches[switch_key]['forward']['state'] == '0': 
+                  switches[switch_key]['forward']['state'] = '1' 
                else:
-                  switches[switch_key]['reverse']['state'] ='0'
+                  switches[switch_key]['forward']['state'] ='0'
 
    screen.blit(background,(0,0)) #viewpointx,viewpointy))
 
    color = 255, 0, 0
-   for sw in switch_numbers:
-   #   print 'switch at segment',sw
-      aseg = segments[sw]
+   for sw in switches.keys():
+      if sw == 853:
+          color= 0,255,0
+      else:
+          color = 255, 0, 0
+      seg = segments[sw]
       rect = pygame.draw.line(screen, color, seg[0], seg[1], width)
-      #for i in range(10):
-      if False:
-         astate = switches[sw]['forward']['state']
-         asegidx = switches[sw]['forward'][astate]
-         if switches[sw]['forward']['flip'] == 1:
-   #         print segidx - i
-            aseg = segments[ asegidx - i ]
-         else:
-   #         print segidx + i
-            aseg = segments[ asegidx + i ]
-         rect = pygame.draw.line(screen, color, aseg[0], aseg[1], width)
-      
-   if False: #not drawn:
-      for segidx in (0,270, 361,628,718,853):
-         seg = segments[segidx]
-         swstr = '<'+str(segidx)+'>'
-         word = Word(swstr, myFont)
-         word.rect.center = (seg[0][0],seg[0][1]+14)
-         background.blit(word.image, word.rect)
-      for sw in switches.keys():
-         #print 'BLAH ',sw,segments[sw]
-         seg = segments[sw]
+      for i in range(10):
+         if sw==853 and i > 2: color = 0,0,255
+         state = switches[sw]['forward']['state']
+         seg = segments[switches[sw]['forward'][state]+i]
          rect = pygame.draw.line(screen, color, seg[0], seg[1], width)
-         #for i in range(10):
-         if False:
-            i = 0
-            state = switches[sw]['forward']['state']
-            if switches[sw]['forward'][state]+i < len(segments):
-               seg = segments[switches[sw]['forward'][state]+i]
-            else:
-               seg = segments[switches[sw]['forward'][state]-i]
-            rect = pygame.draw.line(screen, color, seg[0], seg[1], width)
-            #seg = segments[628+i]
-            rect = pygame.draw.line(screen, (0,255,0), seg[0], seg[1], width)
-            swstr =''#swstr ='<seg '+str(sw)+' to '+str(switches[sw]['forward'][state])+'>'
-            swstr2 ='<seg '+str(sw)+' to '+str(switches[sw]['reverse'][state])+'(reverse)>'
-         #word = Word(swstr, myFont)
-         word2 = Word(swstr2, myFont)
-         print 'seg',seg[0],swstr, swstr2
-         #word.rect.center = seg[0]
-         word2.rect.center = (seg[0][0],seg[0][1]+14)
-         #screen.blit(word.image, word.rect)
-         ## PUT THIS BACK background.blit(word2.image, word2.rect)
-         #sys.exit()
-   drawn = True
 
 
    traincars.update()
